@@ -6,14 +6,14 @@ import employeeService from '@/services/employee'
 export const useEmployeeStore = defineStore('Employee', () => {
   const dialog = ref(false)
   const employees = ref<Employee[]>([])
-  const editedEmployees = ref<Employee>({
-    firstname: '',
-    lastname: ''
+  const editedEmployee = ref<Employee>({
+    name: '',
+    surname: ''
   })
 
   watch(dialog, (newDialog, oldDialog) => {
     if (!newDialog) {
-      editedEmployees.value = { firstname: '', lastname: '' }
+      editedEmployee.value = { name: '', surname: '' }
     }
   })
 
@@ -29,13 +29,10 @@ export const useEmployeeStore = defineStore('Employee', () => {
 
   async function saveEmployee() {
     try {
-      if (editedEmployees.value.id) {
-        const res = await employeeService.updateEmployees(
-          editedEmployees.value.id,
-          editedEmployees.value
-        )
+      if (editedEmployee.value.id) {
+        const res = await employeeService.updateEmployees(editedEmployee.value.id, editedEmployee.value)
       } else {
-        const res = await employeeService.saveEmployees(editedEmployees.value)
+        const res = await employeeService.saveEmployees(editedEmployee.value)
       }
 
       dialog.value = false
@@ -55,17 +52,9 @@ export const useEmployeeStore = defineStore('Employee', () => {
   }
 
   async function editEmployee(employee: Employee) {
-    editedEmployees.value = JSON.parse(JSON.stringify(employee))
+    editedEmployee.value = JSON.parse(JSON.stringify(employee))
     dialog.value = true
   }
 
-  return {
-    dialog,
-    employees,
-    editedEmployees,
-    getEmployee,
-    editEmployee,
-    saveEmployee,
-    deleteEmployee
-  }
+  return { employees, getEmployee, dialog, editedEmployee, saveEmployee, editEmployee, deleteEmployee }
 })
